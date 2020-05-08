@@ -3,5 +3,9 @@ newly-developed reproduction index RW9
 
 Takao Kotani, Motonari Sawada, and Hirofumi Sakakibara
 
- Department of Applied Mathematics and Physics, Tottori university, Tottori 680-8552, Japan
+Department of Applied Mathematics and Physics, Tottori university, Tottori 680-8552, Japan
 (Dated: May 7, 2020)
+
+
+main        ./covid.pdf
+Suppmelent  ./figures/2020_5_3/covid19fig.pdf
