@@ -303,7 +303,8 @@ if dataset_type is "europ":
         ### import data ###
         DATA = []
         #dataset="./Downloads/ダウンロード"
-        dataset="./European_Centre_data"
+        #dataset="./European_Centre_data"
+        dataset="./csv"
         with open(dataset) as d:
                 #print(d)
                 content=d.read()
