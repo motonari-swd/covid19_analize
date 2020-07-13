@@ -1,4 +1,4 @@
-year,month,date,pcr_tested_positive,pcr_tested,hospitalized,serious,discharged,death,confirming,pcr_tests_niid,pcr_tests_quarantine_stations,pcr_tests_public_health_institute,pcr_tests_private_testing,pcr_tests_private_testing_insurance,pcr_tests_universities,pcr_tests_universities_insurance,pcr_tests_medical_institutions,pcr_tests_medical_institutions_insurance,pcr_tests_total,pcr_tests_total_insurance,URL
+year,month,date,tested_positive,people_tested,hospitalized,serious,discharged,death,confirming,pcr_tests_niid,pcr_tests_quarantine_stations,pcr_tests_public_health_institute,pcr_tests_private_testing,pcr_tests_private_testing_insurance,pcr_tests_universities,pcr_tests_universities_insurance,pcr_tests_medical_institutions,pcr_tests_medical_institutions_insurance,pcr_tests_total,pcr_tests_total_insurance,URL
 2020,2,5,16,132,,,4,0,,,,,,,,,,,,,https://www.mhlw.go.jp/stf/newpage_09360.html
 2020,2,6,16,151,,,4,0,,,,,,,,,,,,,https://www.mhlw.go.jp/stf/newpage_09396.html
 2020,2,7,16,174,7,0,9,0,,,,,,,,,,,,,https://www.mhlw.go.jp/stf/newpage_09418.html
@@ -49,7 +49,7 @@ year,month,date,pcr_tested_positive,pcr_tested,hospitalized,serious,discharged,d
 2020,3,28,1646,26401,1187,59,408,52,,2836,2310,45143,2184,1420,1976,723,1446,586,55895,2729,https://www.mhlw.go.jp/stf/newpage_10555.html
 2020,3,29,1819,26607,1358,59,408,54,,3162,2372,46499,2456,1423,2070,732,1480,613,58039,2768,https://www.mhlw.go.jp/stf/newpage_10595.html
 2020,3,30,1886,30088,1423,59,408,56,,3618,2469,48172,2996,1600,2325,833,1659,707,61239,3140,https://www.mhlw.go.jp/stf/newpage_10636.html
-2020,3,31,1823,32002,1594,60,456,57,,3618,2676,51230,3384,1949,2577,915,1853,796,65338,3660,https://www.mhlw.go.jp/stf/newpage_10651.html
+2020,3,31,1967,32002,1594,60,456,57,,3618,2676,51230,3384,1949,2577,915,1853,796,65338,3660,https://www.mhlw.go.jp/stf/newpage_10651.html
 2020,4,1,2047,32002,1757,62,489,60,,3618,2722,54157,3859,2390,2933,997,2211,910,69500,4297,https://www.mhlw.go.jp/stf/newpage_10668.html
 2020,4,2,2300,36687,1980,64,498,63,,3618,2853,57749,4566,3032,3338,1123,2486,1069,74610,5224,https://www.mhlw.go.jp/stf/newpage_10688.html
 2020,4,3,2637,39992,2227,69,559,69,,3804,3349,61365,5345,3703,3866,1256,2670,1174,80399,6133,https://www.mhlw.go.jp/stf/newpage_10696.html
@@ -141,4 +141,14 @@ year,month,date,pcr_tested_positive,pcr_tested,hospitalized,serious,discharged,d
 2020,6,28,18178,380186,822,43,16353,971,8,10717,67795,264744,216668,183013,63194,29849,32704,22161,655822,235023,https://www.mhlw.go.jp/stf/newpage_12134.html
 2020,6,29,18288,385696,869,42,16424,971,10,,,,,,,,,,,,https://www.mhlw.go.jp/stf/newpage_12154.html
 2020,6,30,18420,390347,897,40,16522,973,6,,,,,,,,,,,,https://www.mhlw.go.jp/stf/newpage_12177.html
-2020,7,1,18545,396911,1006,37,16563,974,8,,,,,,,,,,,,https://www.mhlw.go.jp/stf/newpage_12198.html
+2020,7,1,18543,396911,1006,37,16563,974,8,,,,,,,,,,,,https://www.mhlw.go.jp/stf/newpage_12198.html
+2020,7,2,18701,402371,1105,33,16654,975,7,,,,,,,,,,,,https://www.mhlw.go.jp/stf/newpage_12236.html
+2020,7,3,18916,408968,1224,32,16747,976,7,,,,,,,,,,,,https://www.mhlw.go.jp/stf/newpage_12245.html
+2020,7,4,19230,412102,1386,33,16838,976,26,,,,,,,,,,,,https://www.mhlw.go.jp/stf/newpage_12250.html
+2020,7,5,19456,414720,1550,34,16912,976,25,,,,,,,,,,,,https://www.mhlw.go.jp/stf/newpage_12269.html
+2020,7,6,19608,422948,1671,36,16981,977,11,,,,,,,,,,,,https://www.mhlw.go.jp/stf/newpage_12287.html
+2020,7,7,19807,430047,1721,35,17115,979,9,,,,,,,,,,,,https://www.mhlw.go.jp/stf/newpage_12312.html
+2020,7,8,20001,438166,1776,38,17250,980,11,,,,,,,,,,,,https://www.mhlw.go.jp/stf/newpage_12339.html
+2020,7,9,20333,449671,1929,31,17436,981,14,,,,,,,,,,,,https://www.mhlw.go.jp/stf/newpage_12360.html
+2020,7,10,20740,459538,2139,33,17633,981,14,,,,,,,,,,,,https://www.mhlw.go.jp/stf/newpage_12375.html
+2020,7,11,21113,464900,2339,32,17787,981,11,,,,,,,,,,,,https://www.mhlw.go.jp/stf/newpage_12378.html

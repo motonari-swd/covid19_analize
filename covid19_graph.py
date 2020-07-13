@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 import japanize_matplotlib
 import matplotlib.cm as cm
 
-
+import module_text_contena as tx
 
 
 
@@ -274,11 +274,49 @@ def fill_in_missing(calendar,missingdate_dict):
         return missingdate_dict
 
 
+def CW8(cases_list):
+        cases_list  =cases_list
+        ave_list=range_average_w(cases_list)
+        new=[None]*len(y_list)
+        up=[None]*len(y_list)
+        down=[None]*len(y_list)
+        for i in range(0,len(new)-8):
+                if ave_list[i+8]==0:
+                        ave_list[i+8]=0.00001
+                #print(ave_list[i+8])
+
+                        
+                if ave_list[i+8]==None or cases_list[i+9]==None:
+                        new[i]=None   
+                        continue
+                if ave_list[i+8]<0:
+                        new[i]=None   
+                        continue
+
+                #print(cases_list[i+9],ave_list[i+8])
+                #cw8=(cases_list[i+9]-ave_list[i+8])/(ave_list[i+8])**0.5
+                cw8=(cases_list[i+8]-ave_list[i+8])/ave_list[i+8]
+                gap=ave_list[i+8]**0.5
+                print("gaps",gap,cases_list[i+8],ave_list[i+8])
 
 
+                up_cw8=(cases_list[i+8]-ave_list[i+8]+gap)/ave_list[i+8]
+                down_cw8=(cases_list[i+8]-ave_list[i+8]-gap)/ave_list[i+8]
+                
+                
 
 
-
+                #if value>=1000:
+                #        value=1000
+                new[i]=cw8
+                up[i]=up_cw8
+                down[i]=down_cw8
+        #print("\ncw8",new)
+        #print("\nup",up)
+        for i in range(len(y_list)):
+                print(new[i],up[i],down[i])
+        
+        return new ,up,down
 
 
 
@@ -327,6 +365,9 @@ infective_analize=True
 #analizes=["cases","average_w","infective_w8_zoom","infective_w8_2"]
 #analizes=["cases","average_w","infective_w8_zoom","infective_w8_2","inf_zoominout"]
 analizes=["cases","average_w","infective_w8_2"]
+#analizes=["cases","average_w","infective_w8_2","CW8"]
+
+
 
 nostack_select_countries=["Japan","South_Korea","Taiwan","Vietnam","Philippines","Indonesia","Thailand","Malaysia","Mongolia","Myanmar","Laos",
                           "Cambodia","Singapore","Timor_Leste","Italy","Germany","China","United_States_of_America","France","United_Kingdom","Brazil","Egypt","Sweden","Norway","Australia","Austria","Spain"]
@@ -460,8 +501,10 @@ if dataset_type is "toyokei":
 cal=Calendar("2019/12/31",today)
 xlim=[30,len(cal)+1]
 
+#savetext=""
+
 model=[0]*len(cal)
-print(cal)
+#print(cal)
 for i_country,i_japanes in zip(nostack_select_countries,japanes_countries):
         select_countries=[i_country]
         japanes_countries=[i_japanes]
@@ -476,7 +519,7 @@ for i_country,i_japanes in zip(nostack_select_countries,japanes_countries):
 
         axlist=[]
         i_graph=1
-        a_gap=False
+        a_gap=False  #initial False for switch after pile up graph
         import japanize_matplotlib
         for a,analize in enumerate(analizes):
                 max_value=0
@@ -504,9 +547,10 @@ for i_country,i_japanes in zip(nostack_select_countries,japanes_countries):
                                 a_gap=True
                                 a=a-1
                         else:
-                                if a_gap:   
+                                if a_gap:   #after pile up 
                                         a=a-1
-                                axlist.append(plt.subplot(2,1,a+1))     #for pile up N on NW graph and RW8 
+                                #axlist.append(plt.subplot(2,1,a+1))     #for pile up N on NW graph and RW8 
+                                axlist.append(plt.subplot(graph_num,1,a+1))
                 else:
                         if not "infective_w8_2" in analizes:
                                 axlist.append(plt.subplot(len(analizes),1,a+1)) 
@@ -564,6 +608,9 @@ for i_country,i_japanes in zip(nostack_select_countries,japanes_countries):
                                 y_list=y_list[delay:]+[None]*delay
                         if analize=="infective_w8_2" or analize=="infective_w8_zoom" or analize=="inf_zoominout":
                                 y_list=infectivity_w8_2(y_list,delay)
+                        if analize=="CW8":
+                                y_list=CW8(y_list)
+                                
 
                         ### plot ###
                         ############
@@ -583,7 +630,19 @@ for i_country,i_japanes in zip(nostack_select_countries,japanes_countries):
                                         if pile_up_nw:
                                                 c_lab=analize_symbol
                                         print(c_lab)
-                                        plt.plot(x_list, y_list, linewidth=2,label=c_lab,alpha=1,marker='.',linestyle = "solid",color=plot_color)
+
+                                        if analize=="CW8":
+                                                plt.plot(x_list, y_list[0], linewidth=2,label=c_lab,alpha=1,marker='.',linestyle = "solid",color=plot_color)
+                                                plt.plot(x_list, y_list[1], linewidth=2,label=c_lab,alpha=0.75,marker='.',linestyle = "solid",color=(1,0.5,0.5))
+                                                plt.plot(x_list, y_list[2], linewidth=2,label=c_lab,alpha=0.75,marker='.',linestyle = "solid",color=(1,0.5,0.5))
+                                                
+                                                print(y_list[0])
+                                                print(max([i for i in y_list if i is not None]))
+                                                plt.ylim([min([i for i in y_list[0] if i is not None]),max([i for i in y_list[0] if i is not None])])
+                                                y_list=y_list[0]
+                                        else:
+                                                plt.plot(x_list, y_list, linewidth=2,label=c_lab,alpha=1,marker='.',linestyle = "solid",color=plot_color)
+                                        
 
                                 else:
                                         plt.plot(x_list, y_list, linewidth=2,label=c_lab,alpha=1,marker='.',linestyle = "solid",color=(0.87,0.9,0.8))  #for dark color
@@ -766,9 +825,12 @@ for i_country,i_japanes in zip(nostack_select_countries,japanes_countries):
                                 plt.fill_between(x_list,y_list_forfill,facecolor=(0,0.5,0.7),alpha=0.6) #fill
 
 
-                
+                if analize is "CW8":
+                        plt.hlines(1,xlim[0], xlim[1],color=(1,0,0))
+                        plt.hlines(0,xlim[0], xlim[1],color=(0.2,0.2,0.2))
+                        axlist[a].set_ylabel(r'$C^{\rm{W8}}$',fontsize=30)
 
-
+                        
 
 
 
@@ -800,7 +862,8 @@ for i_country,i_japanes in zip(nostack_select_countries,japanes_countries):
                         if langage is "e":
                                 axlist[a].set_xlabel('Date',fontsize=30)
                         #x ticks
-                        xlocs,xlabs=plt.xticks(np.arange(len(cal)),date_reduction(cal)[0],fontsize=30,rotation=None) 
+                        #xlocs,xlabs=plt.xticks(np.arange(len(cal)),date_reduction(cal)[0],fontsize=30,rotation=None) 
+                        xlocs,xlabs=plt.xticks(np.arange(len(cal)),date_reduction(cal)[0],fontsize=25,rotation=None)
                 else:
                         plt.xticks(np.arange(len(cal)),[""]*len(cal),color=None,fontsize=30,rotation=None) 
 
@@ -905,7 +968,10 @@ for i_country,i_japanes in zip(nostack_select_countries,japanes_countries):
                 #plt.tight_layout()
                 plt.subplots_adjust(wspace=0.4, hspace=0.1)
                 plt.xlim(xlim)
- 
+
+        
+        #plt.show()
+        #sys.exit()
 
 
         #country label
@@ -946,6 +1012,7 @@ for i_country,i_japanes in zip(nostack_select_countries,japanes_countries):
                 plt.savefig("./figures/{p}_Rw{d}/".format(p=re.sub(r"\/",r"_",today),d=delay)+str(select_countries).strip('[\'').strip("\']")+'.png', pad_inches=1.0 ,format="png")
         print("save fig\n")
 
+#tx.text_output(savetext,"analized_data")
 
 
 
