@@ -1,7 +1,6 @@
 #chenge directory
 #renamed from corona_graph6.2.py for github
 
-
 ### import section ###
 ######################
 import csv
@@ -14,8 +13,6 @@ import japanize_matplotlib
 import matplotlib.cm as cm
 
 import module_text_contena as tx
-
-
 
 
 ##### Date edit def #####
@@ -116,9 +113,10 @@ def date_reduction(cal):  #ex 2020/01/02 >>> 2
                         new_major.append(month.lstrip("0")+"/"+day.lstrip("0"))
                         firstday_check.append(i)
                         continue
-                elif day=="30":
+                #elif day=="30":
+                elif day=="30" or day=="05":
                         new_major.append("") 
-                elif int(day)%5==0:
+                elif int(day)%10==0:
                         new_major.append(day.lstrip('0'))
                 else:
                         #new_major.append(day.lstrip("0"))
@@ -126,12 +124,68 @@ def date_reduction(cal):  #ex 2020/01/02 >>> 2
         return new_major,firstday_check ,sunday_point
 
 
+def restrict_line(langage):
+        langage="j"
+        from matplotlib.patches import ArrowStyle
+        ### import data ###
+        DATA = []
+        restrict="./japan_restrict"
+        with open(restrict) as d:
+                content=d.read()
+        #print(content)
+        lines=content.split("\n")
+
+        for line in lines:
+                if line =="":continue
+                _data=line.split()
+
+                sdate=_data[0]+"/"+_data[1]+"/"+_data[2]
+                fdate=_data[0]+"/"+_data[3]+"/"+_data[4]
+                data=[]
+                data.append(sdate)
+                data.append(fdate)
+                data.append(_data[5])
+                data.append(_data[6])
+
+                DATA.append(data)
+        
 
 
+        def date_to_ax(date,cal):
+                for i ,idate in enumerate(cal):
+                        if date==idate:
+                                return i
 
 
+        restrict_name_list=[]
+        sdate_list=[]
+        fdate_list=[]
+        for irest in DATA:
+                if langage=="j": 
+                     restrict_name_list.append(irest[2]) 
+                else:
+                        restrict_name_list.append(re.sub(r"_",r" ",irest[3])) 
+                        
+                sdate_list.append(date_to_ax(irest[0],cal))  
+                fdate_list.append(date_to_ax(irest[1],cal)) 
 
-
+            
+ 
+        #for i in range(len(axlist)):
+        #        for j in range(len(restrict_name_list)):                
+        #                axlist[i].vlines(float(xdate_list[j])  ,0,max_value*7/5,color=(1,0.4,0.8),alpha=0.9,linewidth=5,linestyles="dotted")
+        
+        arrow_color=(0.99,0.,0.85)
+        arrow_style=ArrowStyle('|-|', widthA=1.5, widthB=1.5)
+        for j in range(len(restrict_name_list)):  
+                if j==2:
+                        axlist[1].annotate("",xy=(sdate_list[j],4),xytext=(fdate_list[j],4)
+                                                ,arrowprops=dict(arrowstyle=arrow_style,edgecolor=arrow_color,facecolor='#0000ff'))
+                        axlist[1].text(float(sdate_list[j]),4.5, restrict_name_list[j]  , size=30,color=arrow_color)
+                else:
+                        axlist[1].annotate("",xy=(sdate_list[j],8),xytext=(fdate_list[j],8)
+                                                ,arrowprops=dict(arrowstyle=arrow_style,edgecolor=arrow_color,facecolor='#0000ff'))
+                        axlist[1].text(float(sdate_list[j]),8.5, restrict_name_list[j]  , size=30,color=arrow_color)
 
 
 ##### Analizing def #####
@@ -195,7 +249,7 @@ def infectivity_w8_2(y_list,delay):  #### important culcuration
                         value=1000
                 new[i]=value
         if delay==15:
-                print(new)
+                #print(new)
                 _new=[None]*len(new)
                 for i in range(len(new)):
                         
@@ -217,7 +271,7 @@ def infectivity_w8_2(y_list,delay):  #### important culcuration
                         _new[i]=xxx
 
                 new=_new
-                print(new)
+                #print(new)
         return new 
 
 
@@ -335,7 +389,8 @@ day=input("What day")
 today=year+"/"+month+"/"+day
 
 #langage="j"
-langage=input("Select language in Japanese or English\n type e or j\n")
+#langage=input("Select language in Japanese or English\n type e or j\n")
+langage="e"
 
 if today=="":today="2020/5/3"
         
@@ -345,6 +400,7 @@ eort=input("Select dataset in the European Union or toyokeizai dataset.\ntype e 
 print(eort)
 if   eort is "e":dataset_type="europ"
 elif eort is "t":dataset_type="toyokei"
+elif eort is "j":dataset_type="jag-japan"
 else:
         print("type e or t")
         sys.exit()
@@ -353,8 +409,9 @@ else:
 formula=False
 darkcolor=False
 pile_up_nw=True
-#delay=8
-delay=int(input("dalay .ex8,15"))
+delay=8
+#delay=int(input("dalay .ex8,15"))
+
 color_list=[(1,0,0),(0,1,0),(0,0,1),(0.5,0.5,0)]*4
 range_date=7
 infective_analize=True
@@ -494,8 +551,19 @@ if dataset_type is "toyokei":
                 contaner[country][3].append(pop)
                 #contaner[country][4].append(continent)
 
+if dataset_type is "jag-japan":
+        print("DATA Jag japan")
+        select_countries= ["Japan"]
+        japanes_countries=["日本"]
+        contaner={}
+        contaner["Japan"]=[[],[],[],[],[]] #{country:[ date list ],[value list]}
+        import jag_japan_import as jj
+        contaner["Japan"][0]=jj.date
+        contaner["Japan"][1]=jj.confirm
+        pop=     125960000
+        contaner["Japan"][3].append(pop)
 
- 
+
 ### setting fgraph ###
 ######################
 cal=Calendar("2019/12/31",today)
@@ -540,6 +608,7 @@ for i_country,i_japanes in zip(nostack_select_countries,japanes_countries):
                                 #analize_symbol=r'$R^{\rm{W15}}$'
                                 analize_symbol=r'$R^{\rm{W15}}**\frac{8}{15}$'
                 print(analize_symbol)
+
 
                 # set axs
                 if pile_up_nw:    #for pile up N graph and NW graph 
@@ -895,14 +964,14 @@ for i_country,i_japanes in zip(nostack_select_countries,japanes_countries):
                         #plt.ylabel(ana+"/populataion\n["+r"$\times10^{-3}$"+"%]",fontsize=30)
                         plt.ylabel(ana+"/populataion\n["+r"$\times10^{-3}$"+"%]",fontsize=22)
 
-                        print(labs,population)
+                        #print(labs,population)
 
                         for i,l in enumerate(labs):
-                                print(i,l)
+                                #print(i,l)
                                 if l is "":continue
                                 labs[i]=round(int(l)/population*100*1000,2)
                                 print(labs[i])
-                        print(labs)
+                        #print(labs)
                         plt.yticks(locs,labs,fontsize=30)
                         plt.tick_params(axis='y')
 
@@ -984,6 +1053,13 @@ for i_country,i_japanes in zip(nostack_select_countries,japanes_countries):
                 axlist[0].legend(prop={'size':40,},title=None,title_fontsize=15,loc='upper left', ncol=1,labelspacing=0,borderpad=0,framealpha=0.7,facecolor=(0.94,0.97,0.95),borderaxespad=0.3)
 
         
+
+        restrict_view=True
+        ### restrict line 
+        if dataset_type in ["toyokei","jag-japan"] and restrict_view:
+                restrict_line(langage)
+
+
 
         ## finaly edit and save figure ##
         #################################
