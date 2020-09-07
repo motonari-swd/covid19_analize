@@ -2,7 +2,6 @@
 #renamed from corona_graph6.2.py for github
 
 ### import section ###
-######################
 import csv
 import numpy as np
 import sys
@@ -52,7 +51,7 @@ def Calendar(start_date,currentdate):  # create no missing date list
                 for month in range(1,13):
                         for day in range(1,month_date[month]+1):
                                 day_list.append(str(year)+"/"+str(month)+"/"+str(day))
-        ###cut
+        ###cutting
         effectiv_date=False
         effectiv_list=[]
         for date in day_list:
@@ -79,9 +78,10 @@ def Calendar(start_date,currentdate):  # create no missing date list
  
        
 
-def date_reduction(cal):  #ex 2020/01/02 >>> 2
-                          #   2020/01/01 >>> 2020/01/01
-                          #   2020/02/01 >>> 2/1
+def date_reduction(cal): 
+        #ex 2020/01/02 >>> 2
+        #   2020/01/01 >>> 2020/01/01
+        #   2020/02/01 >>> 2/1
         new_major=[]
         firstday_check=[]
         sunday_point=[] 
@@ -89,7 +89,6 @@ def date_reduction(cal):  #ex 2020/01/02 >>> 2
                 year =m.split("/")[0]
                 month=m.split("/")[1]
                 day  =m.split("/")[2]
-
                 #if i==0:
                 #        new_major.append(year+"/"+month.lstrip("0")+"/"+day.lstrip("0"))
                 #        continue
@@ -97,15 +96,11 @@ def date_reduction(cal):  #ex 2020/01/02 >>> 2
                 #        new_major.append(year+"/"+month.lstrip("0")+"/"+day.lstrip("0"))
                 #        continue
 
-
                 #sunday point
                 #2020 01 05 is sunday
                 if "2020/01/05" in cal and "2019/12/31" in cal:
                         if (i-5)%7==0:
                                 sunday_point.append(i)
-
-
-                                               
                 if day=="01" and month=="01" :
                         new_major.append(year+"/"+month.lstrip("0")+"/"+day.lstrip("0"))
                         continue
@@ -132,13 +127,10 @@ def restrict_line(langage):
         restrict="./japan_restrict"
         with open(restrict) as d:
                 content=d.read()
-        #print(content)
         lines=content.split("\n")
-
         for line in lines:
                 if line =="":continue
                 _data=line.split()
-
                 sdate=_data[0]+"/"+_data[1]+"/"+_data[2]
                 fdate=_data[0]+"/"+_data[3]+"/"+_data[4]
                 data=[]
@@ -146,49 +138,48 @@ def restrict_line(langage):
                 data.append(fdate)
                 data.append(_data[5])
                 data.append(_data[6])
-
                 DATA.append(data)
-        
-
-
         def date_to_ax(date,cal):
                 for i ,idate in enumerate(cal):
                         if date==idate:
                                 return i
-
-
         restrict_name_list=[]
         sdate_list=[]
         fdate_list=[]
         for irest in DATA:
-                if langage=="j": 
-                     restrict_name_list.append(irest[2]) 
-                else:
-                        restrict_name_list.append(re.sub(r"_",r" ",irest[3])) 
+                if langage=="j":restrict_name_list.append(irest[2]) 
+                else:           restrict_name_list.append(re.sub(r"_",r" ",irest[3])) 
                         
                 sdate_list.append(date_to_ax(irest[0],cal))  
                 fdate_list.append(date_to_ax(irest[1],cal)) 
-
-            
- 
         #for i in range(len(axlist)):
         #        for j in range(len(restrict_name_list)):                
         #                axlist[i].vlines(float(xdate_list[j])  ,0,max_value*7/5,color=(1,0.4,0.8),alpha=0.9,linewidth=5,linestyles="dotted")
         
-        arrow_color=(0.99,0.,0.85)
+        #arrow_color=(0.99,0.,0.85)
+        arrow_color=(0.99,0.,0.2)
         arrow_style=ArrowStyle('|-|', widthA=1.5, widthB=1.5)
         for j in range(len(restrict_name_list)):  
+                """
                 if j==2:
                         axlist[1].annotate("",xy=(sdate_list[j],4),xytext=(fdate_list[j],4)
                                                 ,arrowprops=dict(arrowstyle=arrow_style,edgecolor=arrow_color,facecolor='#0000ff'))
-                        axlist[1].text(float(sdate_list[j]),4.5, restrict_name_list[j]  , size=30,color=arrow_color)
+                        axlist[1].annotate("",xy=(sdate_list[j],4),xytext=(fdate_list[j],4)
+                                                ,arrowprops=dict(edgecolor=arrow_color,facecolor='#0000ff',width=8))
+                        axlist[1].text(float(sdate_list[j]),4.5, restrict_name_list[j]  , size=20,color=arrow_color)
+
                 else:
                         axlist[1].annotate("",xy=(sdate_list[j],8),xytext=(fdate_list[j],8)
                                                 ,arrowprops=dict(arrowstyle=arrow_style,edgecolor=arrow_color,facecolor='#0000ff'))
                         axlist[1].text(float(sdate_list[j]),8.5, restrict_name_list[j]  , size=30,color=arrow_color)
+                """
+                #__
+                y_point=8.5-(8.5-2)/len(restrict_name_list)*j
+                #axlist[1].annotate("",xy=(fdate_list[j],y_point),xytext=(sdate_list[j],y_point),arrowprops=dict(edgecolor=arrow_color,facecolor=(0,0,1),width=8))
+                axlist[1].text(float(sdate_list[j]),y_point+0.5, restrict_name_list[j]  , size=30,color=arrow_color)  
+                axlist[1].hlines(y_point,fdate_list[j] ,sdate_list[j] ,color=(1,0,0.2),alpha=0.7,linewidth=20)
 
-
-##### Analizing def #####
+##### Analyzing def #####
 #########################
 def infectivity(y_list,range_date):
         base=range_date
@@ -249,10 +240,8 @@ def infectivity_w8_2(y_list,delay):  #### important culcuration
                         value=1000
                 new[i]=value
         if delay==15:
-                #print(new)
                 _new=[None]*len(new)
                 for i in range(len(new)):
-                        
                         if new[i] == 0:
                                 _new[i]=0
                                 continue
@@ -269,9 +258,7 @@ def infectivity_w8_2(y_list,delay):  #### important culcuration
                         #if xxx>1000:_new[i]=1000
                         #else:_new[i]=xxx
                         _new[i]=xxx
-
                 new=_new
-                #print(new)
         return new 
 
 
@@ -317,8 +304,6 @@ def range_average_w(y_list):
                         continue
                 #ave[i]=(sum(base_list))/len(base_list)  ###!!!
                 ave[i]=(sum(base_list))/7
-                #print(base_list,ave[i])
-        #print("ave",ave)
         return ave 
 
 def fill_in_missing(calendar,missingdate_dict):
@@ -337,39 +322,27 @@ def CW8(cases_list):
         for i in range(0,len(new)-8):
                 if ave_list[i+8]==0:
                         ave_list[i+8]=0.00001
-                #print(ave_list[i+8])
-
-                        
                 if ave_list[i+8]==None or cases_list[i+9]==None:
                         new[i]=None   
                         continue
                 if ave_list[i+8]<0:
                         new[i]=None   
                         continue
-
-                #print(cases_list[i+9],ave_list[i+8])
                 #cw8=(cases_list[i+9]-ave_list[i+8])/(ave_list[i+8])**0.5
                 cw8=(cases_list[i+8]-ave_list[i+8])/ave_list[i+8]
                 gap=ave_list[i+8]**0.5
                 print("gaps",gap,cases_list[i+8],ave_list[i+8])
 
-
                 up_cw8=(cases_list[i+8]-ave_list[i+8]+gap)/ave_list[i+8]
                 down_cw8=(cases_list[i+8]-ave_list[i+8]-gap)/ave_list[i+8]
-                
-                
-
 
                 #if value>=1000:
                 #        value=1000
                 new[i]=cw8
                 up[i]=up_cw8
                 down[i]=down_cw8
-        #print("\ncw8",new)
-        #print("\nup",up)
         for i in range(len(y_list)):
                 print(new[i],up[i],down[i])
-        
         return new ,up,down
 
 
@@ -442,11 +415,8 @@ if __name__=="__main__":
                 dataset="./European_Centre_data"
                 #dataset="./csv"
                 with open(dataset) as d:
-                        #print(d)
                         content=d.read()
-                        #print(content)
                         lines=content.split("\n")
-
                         for line in lines:
                                 _data=re.split(r',',line)
                                 data=[]
@@ -525,17 +495,12 @@ if __name__=="__main__":
                                         line[i]="0"+str(line[i])
                                 else:
                                         line[i]=str(line[i])
-                        #print(line)
-
                         date=     line[2]+"/"+line[1]+"/"+line[0]
 
-                        #print(line[3])
                         if il==0:
                                 case=line[3]
                         else:
-                                #print("pre",case)
                                 case=line[3]-sum(contaner[country][1])#cansel ruiseki 
-                                #print(case)
                         #death=    line[5]
                         pop=     125960000 
                         #continent=line[7]
@@ -978,9 +943,7 @@ if __name__=="__main__":
 
 
                         # draw grid ticks
-                        if pile_up_nw and analize=="average_w":
-                                pass
-
+                        if pile_up_nw and analize=="average_w":pass
                         else:
                                 axlist[a].grid(which="both")
                                 axlist[a].tick_params(direction = "inout", length = 15,width=1, colors = (0,0.1,0.04),which="major")
@@ -1015,7 +978,6 @@ if __name__=="__main__":
                                         #plt.text(sum(xlim)/2, max_value*3.5/4, "European Centre for Disease Prevention and Control\n An agency of the European Union", alpha=0.7, size=30, ha="center", va="center",color="g")                                
                                         #plt.text(sum(xlim)*2/3, max_value*3.5/4, "EUROPIAN CDC CDC", alpha=0.7, size=30, ha="center", va="center",color="g")                                                
                                         plt.text(xlim[1]-0.05*(xlim[1]-xlim[0]), max_value*3.5/4, "EUROPIAN CDC", alpha=0.7, size=50, ha="right", va="bottom",color="g")
-
                                         #plt.text(sum(xlim)/2, max_value*2.2/4, "\n https://www.ecdc.europa.eu/en/publications-data/download-todays-data-geographic-distribution-covid-19-cases-worldwide", alpha=0.5, size=25, ha="center", va="center",color="g")
                                         #plt.text(sum(xlim)/2, max_value*2.2/4, "\n https://www.ecdc.europa.eu/en/publications-data/download-todays-data-geographic-distribution-covid-19-cases-worldwide", alpha=0.5, size=15, ha="center", va="center",color="g")
 
@@ -1024,42 +986,33 @@ if __name__=="__main__":
                                                 #plt.text(sum(xlim)/2, max_value*3.5/4, "TOYOKEIZAI ONLINE", alpha=0.7, size=50, ha="center", va="center",color=(0.1,0.1,0.15))
                                                 #plt.text(sum(xlim)/2, max_value*3.5/4, "TOYO KEIZAI ONLINE", alpha=0.7, size=50, ha="center", va="center",color=(0.1,0.1,0.15))
                                                 plt.text(xlim[1]-0.05*(xlim[1]-xlim[0]), max_value*3.5/4, "TOYO KEIZAI ONLINE", alpha=0.7, size=50, ha="right", va="bottom",color=(0.1,0.1,0.15))
-
                                                 #plt.text(sum(xlim)/2, max_value*2.2/4, "https://github.com/kaz-ogiwara/covid19/blob/master/data/summary.csv", alpha=0.5, size=25, ha="center", va="center",color=(0.1,0.1,0.15))
                                         else:
                                                 #plt.text(sum(xlim)/2, max_value*3.5/4, "TOYOKEIZAI ONLINE", alpha=1, size=50, ha="center", va="center",color=(0.97,1,0.97))
                                                 plt.text(sum(xlim)*2/3, max_value*3.5/4, "TOYO KEIZAI ONLINE", alpha=1, size=50, ha="center", va="center",color=(0.97,1,0.97))
                                                 #plt.text(sum(xlim)/2, max_value*2.2/4, "https://github.com/kaz-ogiwara/covid19/blob/master/data/summary.csv", alpha=1, size=25, ha="center", va="center",color=(0.97,1,0.97))  
+                                if dataset_type is "jag-japan":
+                                        plt.text(xlim[1]-0.05*(xlim[1]-xlim[0]), max_value*3.5/4,"J.A.G Japan", alpha=0.7, size=50, ha="right", va="bottom",color=(0.75,0,0))
 
                         print("finish label")
-
-
                         #plt.tight_layout()
                         plt.subplots_adjust(wspace=0.4, hspace=0.1)
                         plt.xlim(xlim)
-
-                
-                #plt.show()
-                #sys.exit()
 
 
                 #country label
                 axlist[0].text(xlim[0]+0.05*(xlim[1]-xlim[0]), cases_max_value*3.5/4, country, alpha=0.7, size=40, ha="left", va="bottom",color=(0.1,0.4,0.1),bbox={"facecolor":(0.98,0.98,0.98)})                                                
                 ### legend ###
-                ##############
                 if pile_up_nw:
                         axlist[0].legend(prop={'size':40,},title=None,title_fontsize=15,loc='lower left', ncol=1,labelspacing=0,borderpad=0,framealpha=0.7,facecolor=(0.94,0.97,0.95),borderaxespad=0.3)
                 else :
                         axlist[0].legend(prop={'size':40,},title=None,title_fontsize=15,loc='upper left', ncol=1,labelspacing=0,borderpad=0,framealpha=0.7,facecolor=(0.94,0.97,0.95),borderaxespad=0.3)
 
                 
-
-                restrict_view=True
                 ### restrict line 
+                restrict_view=True
                 if dataset_type in ["toyokei","jag-japan"] and restrict_view:
                         restrict_line(langage)
-
-
 
                 ## finaly edit and save figure ##
                 #################################
@@ -1079,16 +1032,15 @@ if __name__=="__main__":
                                 #os.mkdir("./figures/{p}".format(p=re.sub(r"\/",r"_",today)))
                                 os.mkdir("./figures/{p}_Rw{d}".format(p=re.sub(r"\/",r"_",today),d=delay))
                                 print("try")
-
                         except:pass
+
+                        print("start save")
                         #plt.savefig("./Pictures/"+__file__.rsplit(".",1)[0]+'_{para}/'.format(para=dataset_type+"_"+re.sub(r"\/",r"_",today)+str(analizes)+"langage="+langage+"_formula="+str(formula))+str(select_countries).strip('[\'').strip("\']")+'.png', pad_inches=1.0 ,format="png")
                         #plt.savefig("./covid19_analize/figures/{p}/".format(p=re.sub(r"\/",r"_",today))+str(select_countries).strip('[\'').strip("\']")+'.png', pad_inches=1.0 ,format="png")
                         #plt.savefig("./figures/{p}/".format(p=re.sub(r"\/",r"_",today))+str(select_countries).strip('[\'').strip("\']")+'.png', pad_inches=1.0 ,format="png")
-                        print("start save")
                         plt.savefig("./figures/{p}_Rw{d}/".format(p=re.sub(r"\/",r"_",today),d=delay)+str(select_countries).strip('[\'').strip("\']")+'.png', pad_inches=1.0 ,format="png")
-                print("save fig\n")
+                        print("save fig\n")
 
-        #tx.text_output(savetext,"analized_data")
 
 
 
