@@ -8,4 +8,4 @@ Department of Applied Mathematics and Physics, Tottori university, Tottori 680-8
 
 
 main        ./covid.pdf
-Suppmelent  ./figures/2020_10_8_Rw8/covid19fig.pdf
+Suppmelent  ./figures/2020_10_6_Rw8/covid19fig.pdf
