@@ -1,0 +1,43 @@
+論文作成において用いたプログラム、データ
+とその使用法を書いておきます。
+ーーーーーーーー
+
+１．各国のRw8グラフの出力
+<必要なファイル>
+covid19_graph.py       :メインコード
+jag_japan_import.py
+module_text_contena.py
+japan_restrict
+download_data.sh
+
+手順1． 
+感染者ソースデータを以下のコマンドで一括ダウンロード
+$./download_data.sh
+
+
+手順2. 
+メインコードを実効
+$python covid19_graph.py
+
+手順3. 
+2を実効後、表示する日付を月、日の順に入力
+最後にソースデータをe,t,jキーで選択
+
+e:Europian CDC
+t:東洋経済online    日本のみ
+j:J.A.G.japan       日本のみ
+
+
+
+
+２．fig1,fig2の出力
+<必要なファイル>
+R_simulation.py
+R_simulation_model
+plotlognormal1.py
+covidepi2.py
+plotserial_1.py
+COVID-19_old.csv
+
+手順1．  R_simulation.pyを実行することでfig1,fig2が出力される。
+$python R_simulation.py

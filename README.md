@@ -1,11 +1,15 @@
-Comparison of day-by-day reproductivity of COVID-19 among countries by a
-newly-developed reproduction index RW9
+Supplement to our paper 
+"Comparison of day-by-day reproductivity of COVID-19 among countries by a
+newly-developed reproduction index RW8"
+(submitted at May 7th (2020) to JPSJ)
 
 Takao Kotani, Motonari Sawada, and Hirofumi Sakakibara
 
 Department of Applied Mathematics and Physics, Tottori university, Tottori 680-8552, Japan
-(Dated: May 7, 2020)
+
+We have supplemental fitugures of the production index
+RW8 for varieties of countries.
+
+In addition, we have python programs to make these figures.
 
 
-main        ./covid.pdf
-Suppmelent  ./figures/2020_5_3/covid19fig.pdf
