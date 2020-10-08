@@ -13,18 +13,9 @@ cdic=collections.Counter(df["確定日"])
 _date=cdic.keys()
 confirm=[cdic[key] for key in _date]
 
-
 def adapt_zero(str1):
         if len(str1)==1:
                 str1="0"+str1
         return str1
 
 date=[adapt_zero(str(day.day))+"/"+adapt_zero(str(day.month))+"/"+str(day.year) for day in _date]
-
-print(date)
-#print(confirm)
-
-
-
-
-

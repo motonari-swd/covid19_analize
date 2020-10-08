@@ -47,21 +47,21 @@ def Calendar(start_date,currentdate):  # create no missing date list
         c_month=int(currentdate.split("/")[1])
         c_day=int(currentdate.split("/")[2])
         
-        for year in range(s_year,c_year+1):
+        for year in range(s_year,c_year+1):#day_list is complete date for setting year range
                 for month in range(1,13):
                         for day in range(1,month_date[month]+1):
                                 day_list.append(str(year)+"/"+str(month)+"/"+str(day))
         ###cutting
         effectiv_date=False
-        effectiv_list=[]
+        effectiv_list=[]   #comp datelist for setting range 
         for date in day_list:
                 if date==start_date:
                         effectiv_date=True
                 if effectiv_date:
                         effectiv_list.append(date)
-                if date==currentdate:
-                        effectiv_date=False                        
-                        
+                #if date==currentdate:
+                if date==str(c_year)+"/"+str(c_month)+"/"+str(c_day):
+                        effectiv_date=False  
         f_list=[]
         for date in effectiv_list:
                 if len(str(date).split('/')[1])==1:
@@ -176,8 +176,8 @@ def restrict_line(langage):
                 #__
                 y_point=8.5-(8.5-2)/len(restrict_name_list)*j
                 #axlist[1].annotate("",xy=(fdate_list[j],y_point),xytext=(sdate_list[j],y_point),arrowprops=dict(edgecolor=arrow_color,facecolor=(0,0,1),width=8))
-                axlist[1].text(float(sdate_list[j]),y_point+0.5, restrict_name_list[j]  , size=30,color=arrow_color)  
-                axlist[1].hlines(y_point,fdate_list[j] ,sdate_list[j] ,color=(1,0,0.2),alpha=0.7,linewidth=20)
+                axlist[2].text(float(sdate_list[j]),y_point+0.5, restrict_name_list[j]  , size=30,color=arrow_color)  
+                axlist[2].hlines(y_point,fdate_list[j] ,sdate_list[j] ,color=(1,0,0.2),alpha=0.7,linewidth=20)
 
 ##### Analyzing def #####
 #########################
@@ -228,13 +228,10 @@ def infectivity_w8_2(y_list,delay):  #### important culcuration
                 #        continue  
   
                 if ave_list[i+3]==0:
-                        #new[i]=1000  
-                        #continue 
                         ave_list[i+3]=0.00001
                 if ave_list[i+3]==None or y_list[i+delay]==None:
                         new[i]=None   
                         continue
-                #new[i]=y_list[i+delay]/ave_list[i]
                 value=y_list[i+delay]/ave_list[i+3]
                 if value>=1000:
                         value=1000
@@ -295,23 +292,37 @@ def range_average_w8(y_list):
 def range_average_w(y_list):
         base=7
         ave=[None]*len(y_list)  
-        for i in range(3,len(ave)-3):
-                #base_list=[item for item in y_list[i-3:i+3] if not item==None]
-                base_list=[item for item in y_list[i-3:i+4] if not item==None]
 
+        for end in range(len(y_list)):
+                if y_list[-(end+1)]!=None:break
+        if end:
+                _list=y_list[:-end]
+        else:  _list=y_list
+        _ave=[None]*len(_list) 
+        for i in range(3,len(_list)-3):
+                base_list=[item for item in _list[i-3:i+4] if not item==None]
+                
                 if sum(base_list)==0:
-                        ave[i]=0
+                        _ave[i]=0
                         continue
-                #ave[i]=(sum(base_list))/len(base_list)  ###!!!
-                ave[i]=(sum(base_list))/7
-        return ave 
+                _ave[i]=(sum(base_list))/7
+        for i in range(len(_ave)):
+                ave[i]=_ave[i]
+        return ave
 
-def fill_in_missing(calendar,missingdate_dict):
+#def fill_in_missing(calendar,missingdate_dict):
+#        missing_date=list(set(calendar)-set(missingdate_dict.keys()))
+#        #missingdate_dict.update([(key,None) for key in missing_date])
+#        missingdate_dict.update([(key,0) for key in missing_date])
+#        return missingdate_dict
+
+def fill_in_missing(missingdate_dict,start_date):#update to do not fill carrent day
+        currentdate=sorted(missingdate_dict.keys())[-1]
+        calendar=Calendar(start_date,currentdate)
         missing_date=list(set(calendar)-set(missingdate_dict.keys()))
         #missingdate_dict.update([(key,None) for key in missing_date])
         missingdate_dict.update([(key,0) for key in missing_date])
         return missingdate_dict
-
 
 def CW8(cases_list):
         cases_list  =cases_list
@@ -377,8 +388,6 @@ if __name__=="__main__":
         else:
                 print("type e or t")
                 sys.exit()
-
-
         formula=False
         darkcolor=False
         pile_up_nw=True
@@ -394,18 +403,14 @@ if __name__=="__main__":
         #analizes=["cases","average_w","infective_w8_2"]
         #analizes=["cases","average_w","infective_w8_zoom","infective_w8_2"]
         #analizes=["cases","average_w","infective_w8_zoom","infective_w8_2","inf_zoominout"]
-        analizes=["cases","average_w","infective_w8_2"]
         #analizes=["cases","average_w","infective_w8_2","CW8"]
-
-
+        #analizes=["cases","average_w","infective_w8_2"]#until 2020 Oct 5
+        analizes=["cases","average_w","N_log","Nw_log","infective_w8_2"]#new
 
         nostack_select_countries=["Japan","South_Korea","Taiwan","Vietnam","Philippines","Indonesia","Thailand","Malaysia","Mongolia","Myanmar","Laos",
                                   "Cambodia","Singapore","Timor_Leste","Italy","Germany","China","United_States_of_America","France","United_Kingdom","Brazil","Egypt","Sweden","Norway","Australia","Austria","Spain"]
         japanes_countries=["日本","韓国","台湾","ベトナム","フィリピン","インドネシア","タイ","マレーシア","モンゴル","ミャンマー","ラオス",
                             "カンボジア","シンガポール","東ティモール","イタリア","ドイツ","中国","アメリカ","フランス","イギリス","ブラジル","エジプト","スウェーデン","ノルウェー","オーストラリア","オーストリア","スペイン"]
-
-
-
 
         if dataset_type is "europ":
                 print("DATA europ")
@@ -533,30 +538,36 @@ if __name__=="__main__":
         ######################
         cal=Calendar("2019/12/31",today)
         xlim=[30,len(cal)+1]
-
-        #savetext=""
-
         model=[0]*len(cal)
-        #print(cal)
+
         for i_country,i_japanes in zip(nostack_select_countries,japanes_countries):
                 select_countries=[i_country]
                 japanes_countries=[i_japanes]
-                print("\n################\n",select_countries,japanes_countries)
 
-                if pile_up_nw:  graph_num=len(analizes)-1               
+                if pile_up_nw:  graph_num=len(analizes)-2    
                 else:           graph_num=len(analizes)
+
+
 
                 fig = plt.figure(figsize=(15*1.618,5*graph_num))
                 #fig, ax = plt.subplots(figsize=(20,10*len(analizes)),facecolor=(1,1,1),edgecolor=(0,0.2,0),linewidth=2)
-                #ax = plt.gca()
 
                 axlist=[]
                 i_graph=1
-                a_gap=False  #initial False for switch after pile up graph
+                a_gap=0  #initial False for switch after pile up graph
                 import japanize_matplotlib
                 for a,analize in enumerate(analizes):
                         max_value=0
-                        print("\n",analize,a,len(analizes))
+                        log=False
+                        print("\n",analize,a,len(analizes)) 
+                        if analize in ["N_log","Nw_log"]:
+                                if analize is "N_log":
+                                        print("N log >> cases")
+                                        analize="cases"
+                                if analize is "Nw_log":
+                                        analize="average_w"
+                                        print("Nw    >> acerage_W")
+                                log=True
 
                         #switch analize symbol which is ram str
                         analize_symbol="?"
@@ -578,13 +589,14 @@ if __name__=="__main__":
                         # set axs
                         if pile_up_nw:    #for pile up N graph and NW graph 
                                 if analize=="average_w":
-                                        a_gap=True
-                                        a=a-1
+                                        a_gap+=1
+                                        a=a-a_gap
                                 else:
                                         if a_gap:   #after pile up 
-                                                a=a-1
+                                                a=a-a_gap
                                         #axlist.append(plt.subplot(2,1,a+1))     #for pile up N on NW graph and RW8 
                                         axlist.append(plt.subplot(graph_num,1,a+1))
+                                        
                         else:
                                 if not "infective_w8_2" in analizes:
                                         axlist.append(plt.subplot(len(analizes),1,a+1)) 
@@ -595,28 +607,24 @@ if __name__=="__main__":
                                                 axlist.append(plt.subplot(2,1,2))
 
 
-
-
                         ### date shaft plot 
-                        cal=Calendar("2019/12/31",today)
+                        cal=Calendar("2019/12/31",today)   #make date list for setting range
                         model=[0]*len(cal)
                         axlist[a].plot(cal, model, linewidth=0.01)
-
 
                         ### analize and plot ###
                         ########################
                         for i,country in enumerate(select_countries) : 
                                 print("\n",country)
-                                
-                                x_list=dmy_to_ymd(contaner[country][0]) #date
-                                y_list=contaner[country][1] #cases
-                                population=contaner[country][3][0]
+                                x_list=dmy_to_ymd(contaner[country][0]) #sort "year,month,day"
+                                y_list=contaner[country][1]             #cases list
+                                population=contaner[country][3][0]      #population
 
-                                ### sort date with cases data
+                                # sort date with cases data
                                 sort_dic={}
                                 for x,y in zip(x_list,y_list):
-                                        sort_dic[x]=y
-                                sort_dic=fill_in_missing(cal,sort_dic)  #fill in missing date by None
+                                        sort_dic[x]=y           
+                                sort_dic=fill_in_missing(sort_dic,"2019/12/31")  #fill in missing date of xy list by None
                                 x_list=sorted(sort_dic.keys())
                                 y_list=[sort_dic[date] for date in x_list]
 
@@ -657,33 +665,26 @@ if __name__=="__main__":
                                         c_lab=select_countries[i]
 
                                 if len(select_countries)==1:
-                                        if not darkcolor:# normal color
-                                                plot_color=(0.4,0,0.9)
-                                                if analize=="cases":
-                                                        plot_color=(0.2,0.6,0.2)
+                                        if darkcolor:   plt.plot(x_list, y_list, linewidth=2,label=c_lab,alpha=1,marker='.',linestyle = "solid",color=(0.87,0.9,0.8))  #for dark color
+                                        else:# normal color
+                                                if analize in ["cases","infective_w8_2"]:
+                                                        plot_color=(0.3,0.2,1)
+                                                else:   
+                                                        #plot_color=(0.2,0.6,0.2)
+                                                        plot_color=(1,0.3,0.2)
                                                 if pile_up_nw:
                                                         c_lab=analize_symbol
-                                                print(c_lab)
-
                                                 if analize=="CW8":
                                                         plt.plot(x_list, y_list[0], linewidth=2,label=c_lab,alpha=1,marker='.',linestyle = "solid",color=plot_color)
                                                         plt.plot(x_list, y_list[1], linewidth=2,label=c_lab,alpha=0.75,marker='.',linestyle = "solid",color=(1,0.5,0.5))
                                                         plt.plot(x_list, y_list[2], linewidth=2,label=c_lab,alpha=0.75,marker='.',linestyle = "solid",color=(1,0.5,0.5))
-                                                        
                                                         print(y_list[0])
                                                         print(max([i for i in y_list if i is not None]))
                                                         plt.ylim([min([i for i in y_list[0] if i is not None]),max([i for i in y_list[0] if i is not None])])
                                                         y_list=y_list[0]
-                                                else:
-                                                        plt.plot(x_list, y_list, linewidth=2,label=c_lab,alpha=1,marker='.',linestyle = "solid",color=plot_color)
-                                                
-
-                                        else:
-                                                plt.plot(x_list, y_list, linewidth=2,label=c_lab,alpha=1,marker='.',linestyle = "solid",color=(0.87,0.9,0.8))  #for dark color
-
-
-                                else:
-                                        plt.plot(x_list, y_list, linewidth=2,label=c_lab,alpha=1,marker='.',linestyle = "solid",color=cm.nipy_spectral((i+0.1)/(len(select_countries))))
+                                                #elif analize=="N_logscale":pass
+                                                else: plt.plot(x_list, y_list, linewidth=2,label=c_lab,alpha=1,marker='.',linestyle = "solid",color=plot_color)
+                                else: plt.plot(x_list, y_list, linewidth=2,label=c_lab,alpha=1,marker='.',linestyle = "solid",color=cm.nipy_spectral((i+0.1)/(len(select_countries))))
 
                                 _max=float(max([i for i in y_list if i is not None]))
                                 if max_value<=_max: max_value=_max
@@ -753,6 +754,11 @@ if __name__=="__main__":
                                 plt.ylim([0,6])
 
                         if analize=="infective_w8_2":
+                                #Oct 5
+                                Rw8_ave=range_average_w(y_list)
+
+                                plt.plot(x_list,Rw8_ave,label=r'$R^{\rm{W8,W}}$',color=(1,0.3,0.2),alpha=1,marker='.',linestyle = "solid", linewidth=2)
+
                                 #axlist[a].set_ylabel('感染力'+r'$I^{\rm{W8}}$',fontsize=30)
                                 axlist[a].set_ylabel('実効再生産数'+r'$R^{\rm{W8}}$',fontsize=30)
                                 #axlist[a].set_ylabel('実効再生産数'+r'$R\rm{W8}$',fontsize=30)  
@@ -766,7 +772,7 @@ if __name__=="__main__":
                                         plt.text(40,5,    r"$R^{\rm{W8}}(i)=\frac{N(i+8)}{N^{\rm{W}}(i)}$", size=30,bbox={"facecolor":(0.98,0.98,0.98)})
                                         #_plt.text(40,5,    r"$R\rm{W8}(i)=\frac{N(i+8)}{N\rm{W}(i)}$", size=30,bbox={"facecolor":(0.98,0.98,0.98)})
 
-                                axlist[a].hlines(1, xlim[0], xlim[1],color=(1,0,0))
+                                axlist[a].hlines(1, xlim[0], xlim[1],color=(0.4,0.6,0),alpha=0.8,linewidth=3)
                                 #plt.ylim([0,6])
                                 #plt.ylim([0,3])
                                 plt.ylim([0,10])
@@ -780,7 +786,8 @@ if __name__=="__main__":
                                         plt.fill_between(x_list,y_list_forfill,facecolor='b',alpha=0.1) #fill
                                 else:
                                         plt.fill_between(x_list,y_list_forfill,facecolor=(0,1,1),alpha=0.4) #fill
-                               
+
+
                         if analize=="infective_w8_zoom":
                                 #axlist[a].set_ylabel('感染力'+r'$I^{\rm{W8}}$',fontsize=30)
                                 axlist[a].set_ylabel('実効再生産数'+r'$R^{\rm{W8}}$',fontsize=30)
@@ -864,9 +871,6 @@ if __name__=="__main__":
                                 plt.hlines(0,xlim[0], xlim[1],color=(0.2,0.2,0.2))
                                 axlist[a].set_ylabel(r'$C^{\rm{W8}}$',fontsize=30)
 
-                                
-
-
 
                         ### set title ###
                         #################
@@ -878,7 +882,9 @@ if __name__=="__main__":
                                         #axlist[0].set_title("Reproduction index "+r"$R^{\rm{W9}}$"+"(〜"+today+")",fontsize=40)
                                         #axlist[0].set_title(select_countries[0]+"  Reproduction index "+r"$R^{\rm{W9}}$"+"(〜"+today+")",fontsize=40)
                                         #axlist[0].set_title(select_countries[0]+"  Reproduction index "+analize_symbol+"(〜"+today+")",fontsize=40)                                
-                                        axlist[0].set_title("Reproduction index "+analize_symbol+"(〜"+today+")",fontsize=40)                                
+                                        #axlist[0].set_title("Reproduction index "+analize_symbol+"(〜"+today+")",fontsize=40)  
+                                        axlist[0].set_title("Reproduction index "+analize_symbol,fontsize=40)  
+                                                                              
 
                                 else:
                                         #axlist[0].set_title("Reproduction index "+r"$R^{\rm{W8}}$"+"(〜"+today+")",fontsize=40,color="w")
@@ -910,8 +916,6 @@ if __name__=="__main__":
                                 for i in range(len(labs)):
                                         if not i%3==0:
                                                 labs[i]=""
-                                #print(labs)
-
                                 plt.yticks(locs,labs,fontsize=30)
                         else:plt.yticks(fontsize=30)
 
@@ -921,40 +925,38 @@ if __name__=="__main__":
                         #if analize in ["cases","average_w"]:            ###for right label
                         #if analize is "cases" or (analize is "average_w" and not pile_up_nw):            ###for right label
                         if (not pile_up_nw and analive in ["cases","average_w"]) or (pile_up_nw and analize=="average_w") :            ###for right label
-                                plt.twinx()
-                                #if analize is "cases":ana=r"$N$"
-                                if analize is "cases":ana=r"$N^{\rm{obs}}$"        
-                                elif analize is "average_w": ana=r"$N^{\rm{obs,W}}$"
+                                if log:pass
+                                else:
+                                        plt.twinx()
+                                        if analize is "cases":ana=r"$N^{\rm{obs}}$"        
+                                        elif analize is "average_w": ana=r"$N^{\rm{obs,W}}$"
 
-                                #plt.ylabel(ana+"/populataion\n["+r"$\times10^{-3}$"+"%]",fontsize=30)
-                                plt.ylabel(ana+"/populataion\n["+r"$\times10^{-3}$"+"%]",fontsize=22)
+                                        for i,l in enumerate(labs):
+                                                if l is "":continue
+                                                labs[i]=round(int(l)/population*100*1000,2)
 
-                                #print(labs,population)
-
-                                for i,l in enumerate(labs):
-                                        #print(i,l)
-                                        if l is "":continue
-                                        labs[i]=round(int(l)/population*100*1000,2)
-                                        print(labs[i])
-                                #print(labs)
-                                plt.yticks(locs,labs,fontsize=30)
-                                plt.tick_params(axis='y')
+                                        #plt.ylabel(ana+"/populataion\n["+r"$\times10^{-3}$"+"%]",fontsize=30)
+                                        plt.ylabel(ana+"/populataion\n["+r"$\times10^{-3}$"+"%]",fontsize=22)
+                                        plt.yticks(locs,labs,fontsize=30)
+                                        plt.tick_params(axis='y')
 
 
 
                         # draw grid ticks
                         if pile_up_nw and analize=="average_w":pass
                         else:
+                                line_length=max_value*7/5
+                                if log: line_length=100000
                                 axlist[a].grid(which="both")
                                 axlist[a].tick_params(direction = "inout", length = 15,width=1, colors = (0,0.1,0.04),which="major")
 
                                 for xpoint in date_reduction(cal)[1]:
-                                        axlist[a].vlines(xpoint, 0, max_value*7/5,color=(0.08,0.1,0.08),alpha=0.7,linewidth=2.5,linestyles="dashed")
+                                        axlist[a].vlines(xpoint, 0, line_length,color=(0.08,0.1,0.08),alpha=0.7,linewidth=2.5,linestyles="dashed")
 
                                 #draw weekend line
                                 for sunday in date_reduction(cal)[2]:
-                                        axlist[a].vlines(sunday  ,0,max_value*7/5,color=(1,0,0),alpha=0.9,linewidth=2,linestyles="dotted")
-                                        axlist[a].vlines(sunday-1,0,max_value*7/5,color=(0.2,0,1),alpha=0.9,linewidth=1.5,linestyles="dotted")# sutuday line
+                                        axlist[a].vlines(sunday  ,0,line_length,color=(1,0,0),alpha=0.9,linewidth=2,linestyles="dotted")
+                                        axlist[a].vlines(sunday-1,0,line_length,color=(0.2,0,1),alpha=0.9,linewidth=1.5,linestyles="dotted")# sutuday line
 
                         ### legend ###
                         ##############
@@ -972,7 +974,7 @@ if __name__=="__main__":
 
 
                         ### label for datasets ###
-                        if analize is "cases":
+                        if analize is "cases" and not log:
                                 if dataset_type is "europ":
                                         #plt.text(sum(xlim)/2, max_value*3.5/4, "European Centre for Disease Prevention and Control\n An agency of the European Union", alpha=0.7, size=40, ha="center", va="center",color="g")
                                         #plt.text(sum(xlim)/2, max_value*3.5/4, "European Centre for Disease Prevention and Control\n An agency of the European Union", alpha=0.7, size=30, ha="center", va="center",color="g")                                
@@ -998,6 +1000,13 @@ if __name__=="__main__":
                         #plt.tight_layout()
                         plt.subplots_adjust(wspace=0.4, hspace=0.1)
                         plt.xlim(xlim)
+                        if log:      
+                                if 9000<max_value: 
+                                        plt.ylim([0.1,100000])
+                                else:
+                                        plt.ylim([0.1,10000])
+                                plt.yscale("log")                               
+                                
 
 
                 #country label
@@ -1008,11 +1017,13 @@ if __name__=="__main__":
                 else :
                         axlist[0].legend(prop={'size':40,},title=None,title_fontsize=15,loc='upper left', ncol=1,labelspacing=0,borderpad=0,framealpha=0.7,facecolor=(0.94,0.97,0.95),borderaxespad=0.3)
 
-                
+                axlist[2].legend(prop={'size':40,},title=None,title_fontsize=15,loc='upper right', ncol=1,labelspacing=0,borderpad=0,framealpha=0.7,facecolor=(0.94,0.97,0.95),borderaxespad=0.3)
                 ### restrict line 
                 restrict_view=True
                 if dataset_type in ["toyokei","jag-japan"] and restrict_view:
                         restrict_line(langage)
+
+
 
                 ## finaly edit and save figure ##
                 #################################
