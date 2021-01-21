@@ -24,16 +24,12 @@ def date_sort(date_list):            #date_list=["15/04/2020","09/04/2020","15/0
         sorted_list=sorted(new_date_list)  
         return sorted_list
 
-
-
 def dmy_to_ymd(date_list):            # trance day/month/year >>> year/month/day
         new_date_list=[]
         for d in date_list:
                 new_date=d.split("/")[2]+"/"+d.split("/")[1]+"/"+d.split("/")[0] # d/m/y >>>y/m/d
                 new_date_list.append(new_date)  
         return  new_date_list 
-
-
 
 def Calendar(start_date,currentdate):  # create no missing date list 
         month_date={1:31,2:29,3:31,4:30,5:31,6:30,7:31,8:31,9:30,10:31,11:30,12:31}  
@@ -75,8 +71,6 @@ def Calendar(start_date,currentdate):  # create no missing date list
                 ndate=str(date).split('/')[0]+"/"+n_month+"/"+n_day
                 f_list.append(ndate)
         return f_list
- 
-       
 
 def date_reduction(cal): #for tick date label
         #ex 2020/01/02 >>> 2
@@ -103,6 +97,7 @@ def date_reduction(cal): #for tick date label
                                 sunday_point.append(i)
                 if day=="01" and month=="01" :
                         new_major.append(year+"/"+month.lstrip("0")+"/"+day.lstrip("0"))
+                        firstday_check.append(i)
                         continue
                 elif day=="01":
                         new_major.append(month.lstrip("0")+"/"+day.lstrip("0"))
@@ -117,7 +112,6 @@ def date_reduction(cal): #for tick date label
                         #new_major.append(day.lstrip("0"))
                         new_major.append("")   
         return new_major,firstday_check ,sunday_point
-
 
 def restrict_line(langage):
         langage="e"
@@ -260,7 +254,6 @@ def infectivity_w8_2(y_list,delay):  #### important culcuration
                 new=_new
         return new 
 
-
 def range_average(y_list,range_date):
         base=range_date
         new=[None]*len(y_list)  
@@ -387,9 +380,6 @@ def import_koroshodata():
                 print("!!!check kouroughou data")
         return date,positive
 
-
-
-
 if __name__=="__main__":
         ### Paramaters ###
         ##################
@@ -397,8 +387,8 @@ if __name__=="__main__":
         ### setting Date range
         #today="2020/4/29"
         #today=input("What day is it Today \nex 2020/4/20\n")
-        year="2020"
-        #year=input("What year")
+        year="2021"
+        year=input("What year")
         month=input("What month")
         day=input("What day")
         today=year+"/"+month+"/"+day
@@ -1038,12 +1028,12 @@ if __name__=="__main__":
                                 axlist[a].tick_params(direction = "inout", length = 15,width=1, colors = (0,0.1,0.04),which="major")
 
                                 for xpoint in date_reduction(cal)[1]:
-                                        axlist[a].vlines(xpoint, 0, line_length,color=(0.08,0.1,0.08),alpha=0.7,linewidth=2.5,linestyles="dashed")
+                                        axlist[a].vlines(xpoint, 0, line_length,color=(0.08,0.1,0.08),alpha=0.7,linewidth=2.5,linestyles="dashed")# month sepalate line
 
                                 #draw weekend line
                                 for sunday in date_reduction(cal)[2]:
-                                        axlist[a].vlines(sunday  ,0,line_length,color=(1,0,0),alpha=0.9,linewidth=2,linestyles="dotted")
-                                        axlist[a].vlines(sunday-1,0,line_length,color=(0.2,0,1),alpha=0.9,linewidth=1.5,linestyles="dotted")# sutuday line
+                                        axlist[a].vlines(sunday  ,0,line_length,color=(1,0,0),alpha=0.9,linewidth=2,linestyles="dotted")# draw sunday line
+                                        axlist[a].vlines(sunday-1,0,line_length,color=(0.2,0,1),alpha=0.9,linewidth=1.5,linestyles="dotted")# draw sutuday line
 
                         ### legend ###
                         ##############
@@ -1112,8 +1102,6 @@ if __name__=="__main__":
                 restrict_view=True
                 if dataset_type in ["toyokei","jag-japan","DATA kourou"] and restrict_view:
                         restrict_line(langage)
-
-
 
                 ## finaly edit and save figure ##
                 #################################
