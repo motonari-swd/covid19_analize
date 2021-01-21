@@ -78,7 +78,7 @@ def Calendar(start_date,currentdate):  # create no missing date list
  
        
 
-def date_reduction(cal): 
+def date_reduction(cal): #for tick date label
         #ex 2020/01/02 >>> 2
         #   2020/01/01 >>> 2020/01/01
         #   2020/02/01 >>> 2/1
@@ -121,6 +121,7 @@ def date_reduction(cal):
 
 def restrict_line(langage):
         langage="e"
+        if PR: langage="j"
         from matplotlib.patches import ArrowStyle
         ### import data ###
         DATA = []
@@ -175,12 +176,13 @@ def restrict_line(langage):
                 """
                 #__
                 y_point=8.5-(8.5-2)/len(restrict_name_list)*j
+                if PR:
+                        y_point=2.5-(2.5-1)/len(restrict_name_list)*j
                 #axlist[1].annotate("",xy=(fdate_list[j],y_point),xytext=(sdate_list[j],y_point),arrowprops=dict(edgecolor=arrow_color,facecolor=(0,0,1),width=8))
-                axlist[2].text(float(sdate_list[j]),y_point+0.5, restrict_name_list[j]  , size=30,color=arrow_color)  
-                axlist[2].hlines(y_point,fdate_list[j] ,sdate_list[j] ,color=(1,0,0.2),alpha=0.7,linewidth=20)
+                axlist[-1].text(float(sdate_list[j]),y_point+0.1, restrict_name_list[j]  , size=30,color=arrow_color)  
+                axlist[-1].hlines(y_point,fdate_list[j] ,sdate_list[j] ,color=(1,0,0.2),alpha=0.7,linewidth=20)
 
 ##### Analyzing def #####
-#########################
 def infectivity(y_list,range_date):
         base=range_date
         new=[None]*len(y_list)
@@ -356,6 +358,34 @@ def CW8(cases_list):
                 print(new[i],up[i],down[i])
         return new ,up,down
 
+def import_koroshodata():
+        with open("pcr_positive_daily.csv") as f:
+                data=f.read()
+        lines=data.split("\n")[1:-1]
+        print(lines)
+        _date=[lines[i].split(",")[0] for i in range(len(lines))]
+        positive=[int(lines[i].split(",")[1]) for i in range(len(lines))]
+
+        date=[]
+        for i in range(len(_date)):
+                new_date=_date[i]
+                date_split=_date[i].split("/")
+                if len(date_split[1])==1:
+                        new_date=date_split[0]+"/0"+date_split[1]
+                else:
+                        new_date=date_split[0]+"/"+date_split[1]
+                if len(date_split[2])==1:
+                        new_date+="/0"+date_split[2]   
+                else:
+                        new_date+="/"+date_split[2]
+                date.append(new_date)
+                                            
+        print(date)
+        print(positive)
+        
+        if len(date)!=len(positive):
+                print("!!!check kouroughou data")
+        return date,positive
 
 
 
@@ -364,6 +394,7 @@ if __name__=="__main__":
         ### Paramaters ###
         ##################
 
+        ### setting Date range
         #today="2020/4/29"
         #today=input("What day is it Today \nex 2020/4/20\n")
         year="2020"
@@ -372,32 +403,39 @@ if __name__=="__main__":
         day=input("What day")
         today=year+"/"+month+"/"+day
 
-        #langage="j"
+        ### setting langage
         #langage=input("Select language in Japanese or English\n type e or j\n")
         langage="e"
+        #langage="j"
 
-        if today=="":today="2020/5/3"
-                
+        ### setting 
         #dataset_type="europ"
         #dataset_type="toyokei"
-        eort=input("Select dataset in the European Union or toyokeizai dataset.\ntype e or t\n")
+        #eort=input("Select dataset in the European Union or toyokeizai dataset.\ntype e or t\n")
+        eort=input("Select analized data,e or t or j\ne >>> ECDC\nt >>> Toyokeizai\nj >>>jag japan\nk >>>Koseirodousyo")
         print(eort)
         if   eort is "e":dataset_type="europ"
         elif eort is "t":dataset_type="toyokei"
         elif eort is "j":dataset_type="jag-japan"
+        elif eort is "k":dataset_type="DATA kourou"
         else:
-                print("type e or t")
+                print("Select analized data,e or t or j\ne >>> ECDC\nt >>> Toyokeizai\nj >>>jag japan")
                 sys.exit()
+
+        ### setting option
         formula=False
         darkcolor=False
         pile_up_nw=True
-        delay=8
+        delay=8#15
         #delay=int(input("dalay .ex8,15"))
+        plot_kourou=False
+        PR=True
 
         color_list=[(1,0,0),(0,1,0),(0,0,1),(0.5,0.5,0)]*4
         range_date=7
         infective_analize=True
 
+        ### Analysis setting
         #analizes=["cases","average","infective","average_w8","infective_w8","average_w","infective_w8_2"]
         #analizes=["cases"]
         #analizes=["cases","average_w","infective_w8_2"]
@@ -406,12 +444,14 @@ if __name__=="__main__":
         #analizes=["cases","average_w","infective_w8_2","CW8"]
         #analizes=["cases","average_w","infective_w8_2"]#until 2020 Oct 5
         analizes=["cases","average_w","N_log","Nw_log","infective_w8_2"]#new
+        if PR:analizes=["cases","average_w","infective_w8_2"]
 
+        ### Country list
         nostack_select_countries=["Japan","South_Korea","Taiwan","Vietnam","Philippines","Indonesia","Thailand","Malaysia","Mongolia","Myanmar","Laos",
                                   "Cambodia","Singapore","Timor_Leste","Italy","Germany","China","United_States_of_America","France","United_Kingdom","Brazil","Egypt","Sweden","Norway","Australia","Austria","Spain"]
         japanes_countries=["日本","韓国","台湾","ベトナム","フィリピン","インドネシア","タイ","マレーシア","モンゴル","ミャンマー","ラオス",
                             "カンボジア","シンガポール","東ティモール","イタリア","ドイツ","中国","アメリカ","フランス","イギリス","ブラジル","エジプト","スウェーデン","ノルウェー","オーストラリア","オーストリア","スペイン"]
-
+        ### Data inport
         if dataset_type is "europ":
                 print("DATA europ")
                 ### import data ###
@@ -432,7 +472,6 @@ if __name__=="__main__":
                                         data.append(p)
                                 #if len(data)==1:continue
                                 DATA.append(data)
-
                 ### take data ###
                 contaner={}
                 for line in DATA[1:]:
@@ -443,12 +482,10 @@ if __name__=="__main__":
                         death=    line[5]
                         pop=      line[9]
                         continent=line[7]
-
                         if not country in contaner.keys():
                                 contaner[country]=[[],[],[],[],[]] #{country:[ date list ],[value list]}
                         #date_list=[]
                         #value_list=[]
-                        
                         contaner[country][0].append(date)
                         contaner[country][1].append(case)
                         contaner[country][2].append(death)
@@ -463,9 +500,6 @@ if __name__=="__main__":
                         contaner[key][3].reverse()
                         contaner[key][2].reverse()
                 """
-
-
-
         if dataset_type is "toyokei":
                 print("DATA toyokei")
                 select_countries= ["Japan"]
@@ -484,7 +518,6 @@ if __name__=="__main__":
                                 for p in _data:
                                         try:p=int(p)
                                         except:pass
-                                        
                                         data.append(p)
                                 if len(data)==1:continue
                                 DATA.append(data)
@@ -493,7 +526,6 @@ if __name__=="__main__":
                 contaner={}
                 for il,line in enumerate(DATA[1:]):
                         country=  "Japan"
-
                         #print("\n",line)
                         for i in range(3):
                                 if line[i]<10:
@@ -533,6 +565,18 @@ if __name__=="__main__":
                 pop=     125960000
                 contaner["Japan"][3].append(pop)
 
+        if dataset_type is "DATA kourou":
+                print("DATA kourou")
+                kourou_data=import_koroshodata()
+                select_countries= ["Japan"]
+                japanes_countries=["日本"]
+                contaner={}
+                contaner["Japan"]=[[],[],[],[],[]] #{country:[ date list ],[value list]}
+                contaner["Japan"][0]=kourou_data[0]
+                contaner["Japan"][1]=kourou_data[1]   
+                pop=     125960000  
+                contaner["Japan"][3].append(pop) 
+
 
         ### setting fgraph ###
         ######################
@@ -544,10 +588,9 @@ if __name__=="__main__":
                 select_countries=[i_country]
                 japanes_countries=[i_japanes]
 
-                if pile_up_nw:  graph_num=len(analizes)-2    
+                if PR:          graph_num=3
+                elif pile_up_nw:  graph_num=len(analizes)-2    
                 else:           graph_num=len(analizes)
-
-
 
                 fig = plt.figure(figsize=(15*1.618,5*graph_num))
                 #fig, ax = plt.subplots(figsize=(20,10*len(analizes)),facecolor=(1,1,1),edgecolor=(0,0.2,0),linewidth=2)
@@ -575,6 +618,7 @@ if __name__=="__main__":
                                 analize_symbol=r"$N^{\rm{obs}}$"
                         if analize is "average_w":
                                 analize_symbol=r"$N^{\rm{obs,W}}$"
+                                if PR: analize_symbol=r"$N^{\rm{obs}}$(週平均)"
                         if analize is "infective_w8_2":
                                 if delay==8:
                                         analize_symbol=r'$R^{\rm{W8}}$'
@@ -587,7 +631,21 @@ if __name__=="__main__":
 
 
                         # set axs
-                        if pile_up_nw:    #for pile up N graph and NW graph 
+                        if PR:
+                                if analize=="cases":
+                                        if a_gap:   #after pile up 
+                                                a=a-a_gap
+                                        axlist.append(plt.subplot(3,1,1))
+                                elif analize=="average_w":
+                                        a_gap+=1
+                                        a=a-a_gap
+                                        pass
+                                elif analize=="infective_w8_2":
+                                        if a_gap:   #after pile up 
+                                                a=a-a_gap
+                                        axlist.append(plt.subplot(3,1,(2,3)))
+
+                        elif pile_up_nw:    #for pile up N graph and NW graph 
                                 if analize=="average_w":
                                         a_gap+=1
                                         a=a-a_gap
@@ -607,6 +665,8 @@ if __name__=="__main__":
                                                 axlist.append(plt.subplot(2,1,2))
 
 
+
+
                         ### date shaft plot 
                         cal=Calendar("2019/12/31",today)   #make date list for setting range
                         model=[0]*len(cal)
@@ -616,7 +676,10 @@ if __name__=="__main__":
                         ########################
                         for i,country in enumerate(select_countries) : 
                                 print("\n",country)
-                                x_list=dmy_to_ymd(contaner[country][0]) #sort "year,month,day"
+                                if dataset_type is "DATA kourou":
+                                        x_list=contaner[country][0]
+                                else:
+                                        x_list=dmy_to_ymd(contaner[country][0]) #sort "year,month,day"
                                 y_list=contaner[country][1]             #cases list
                                 population=contaner[country][3][0]      #population
 
@@ -628,6 +691,14 @@ if __name__=="__main__":
                                 x_list=sorted(sort_dic.keys())
                                 y_list=[sort_dic[date] for date in x_list]
 
+
+                                #if dataset_type is "DATA kourou":
+                                #        y_list=y_list[1:]#delay one day
+                                #        x_list=x_list[:-1]
+
+                                # cutting today-1 data
+                                x_list=x_list[:len(cal)-1]
+                                y_list=y_list[:len(cal)-1]
 
                                 ### analize ###
                                 ###############
@@ -702,6 +773,10 @@ if __name__=="__main__":
                                         if langage is "e":
                                                 axlist[a].set_ylabel(r"$N^{\rm{obs}}$"+"\n[person/day]",fontsize=22)                                
                                         plt.ylim([0,max_value*6/5])
+
+                                        if plot_kourou: #plot kourou positive data
+                                                kourou_data=import_koroshodata()
+                                                plt.plot(kourou_data[0],kourou_data[1],label="kouseiroudoushow",color=(0,1,1),alpha=1,marker='.',linestyle = "solid", linewidth=2)
                                 else:
                                         #ax.set_ylabel('New cases par day',fontsize=20)
                                         axlist[a].set_ylabel("新規感染者数"+r"$N$"+"[人/日]",fontsize=30)
@@ -757,7 +832,11 @@ if __name__=="__main__":
                                 #Oct 5
                                 Rw8_ave=range_average_w(y_list)
 
-                                plt.plot(x_list,Rw8_ave,label=r'$R^{\rm{W8,W}}$',color=(1,0.3,0.2),alpha=1,marker='.',linestyle = "solid", linewidth=2)
+                                if PR:
+                                        legend_lab=r'$R^{\rm{W8}}$(週平均)'
+                                else:
+                                        legend_lab=r'$R^{\rm{W8,W}}$'
+                                plt.plot(x_list,Rw8_ave,label=legend_lab,color=(1,0.3,0.2),alpha=1,marker='.',linestyle = "solid", linewidth=2)
 
                                 #axlist[a].set_ylabel('感染力'+r'$I^{\rm{W8}}$',fontsize=30)
                                 axlist[a].set_ylabel('実効再生産数'+r'$R^{\rm{W8}}$',fontsize=30)
@@ -776,6 +855,9 @@ if __name__=="__main__":
                                 #plt.ylim([0,6])
                                 #plt.ylim([0,3])
                                 plt.ylim([0,10])
+
+                                if PR:
+                                        plt.ylim([0,3])
                         
                                 ## filling
                                 y_list_forfill=y_list
@@ -897,7 +979,12 @@ if __name__=="__main__":
                         plt.rcParams['axes.xmargin'] = 0        #(0,0)point
                         #ax.set_xlabel('Date',fontsize=20)
                         #if a==len(analizes)-1:
-                        if a==graph_num-1:
+                        print("a=",a,graph_num)
+                        if PR and a==1:
+                                axlist[a].set_xlabel('Date',fontsize=30)
+                                xlocs,xlabs=plt.xticks(np.arange(len(cal)),date_reduction(cal)[0],fontsize=25,rotation=None)
+                                plt.setp(axlist[a].get_xticklabels(), rotation=-30,rotation_mode="anchor")
+                        elif a==graph_num-1:
                                 axlist[a].set_xlabel('日付',fontsize=30)
                                 if langage is "e":
                                         axlist[a].set_xlabel('Date',fontsize=30)
@@ -924,7 +1011,7 @@ if __name__=="__main__":
 
                         #if analize in ["cases","average_w"]:            ###for right label
                         #if analize is "cases" or (analize is "average_w" and not pile_up_nw):            ###for right label
-                        if (not pile_up_nw and analive in ["cases","average_w"]) or (pile_up_nw and analize=="average_w") :            ###for right label
+                        if (not pile_up_nw and analive in ["cases","average_w"]) or (pile_up_nw and analize=="average_w") and not PR :            ###for right label
                                 if log:pass
                                 else:
                                         plt.twinx()
@@ -995,6 +1082,8 @@ if __name__=="__main__":
                                                 #plt.text(sum(xlim)/2, max_value*2.2/4, "https://github.com/kaz-ogiwara/covid19/blob/master/data/summary.csv", alpha=1, size=25, ha="center", va="center",color=(0.97,1,0.97))  
                                 if dataset_type is "jag-japan":
                                         plt.text(xlim[1]-0.05*(xlim[1]-xlim[0]), max_value*3.5/4,"J.A.G Japan", alpha=0.7, size=50, ha="right", va="bottom",color=(0.75,0,0))
+                                if dataset_type is "DATA kourou":
+                                        plt.text(xlim[1]-0.05*(xlim[1]-xlim[0]), max_value*3.5/4,"厚生労働省オープンデータ", alpha=0.7, size=40, ha="right", va="bottom",color=(0,0,0.75))
 
                         print("finish label")
                         #plt.tight_layout()
@@ -1017,10 +1106,11 @@ if __name__=="__main__":
                 else :
                         axlist[0].legend(prop={'size':40,},title=None,title_fontsize=15,loc='upper left', ncol=1,labelspacing=0,borderpad=0,framealpha=0.7,facecolor=(0.94,0.97,0.95),borderaxespad=0.3)
 
-                axlist[2].legend(prop={'size':40,},title=None,title_fontsize=15,loc='upper right', ncol=1,labelspacing=0,borderpad=0,framealpha=0.7,facecolor=(0.94,0.97,0.95),borderaxespad=0.3)
+                #axlist[2].legend(prop={'size':40,},title=None,title_fontsize=15,loc='upper right', ncol=1,labelspacing=0,borderpad=0,framealpha=0.7,facecolor=(0.94,0.97,0.95),borderaxespad=0.3)
+                axlist[-1].legend(prop={'size':40,},title=None,title_fontsize=15,loc='upper right', ncol=1,labelspacing=0,borderpad=0,framealpha=0.7,facecolor=(0.94,0.97,0.95),borderaxespad=0.3)
                 ### restrict line 
                 restrict_view=True
-                if dataset_type in ["toyokei","jag-japan"] and restrict_view:
+                if dataset_type in ["toyokei","jag-japan","DATA kourou"] and restrict_view:
                         restrict_line(langage)
 
 
@@ -1044,7 +1134,8 @@ if __name__=="__main__":
                                 os.mkdir("./figures/{p}_Rw{d}".format(p=re.sub(r"\/",r"_",today),d=delay))
                                 print("try")
                         except:pass
-
+                        if PR:
+                                plt.tight_layout()
                         print("start save")
                         #plt.savefig("./Pictures/"+__file__.rsplit(".",1)[0]+'_{para}/'.format(para=dataset_type+"_"+re.sub(r"\/",r"_",today)+str(analizes)+"langage="+langage+"_formula="+str(formula))+str(select_countries).strip('[\'').strip("\']")+'.png', pad_inches=1.0 ,format="png")
                         #plt.savefig("./covid19_analize/figures/{p}/".format(p=re.sub(r"\/",r"_",today))+str(select_countries).strip('[\'').strip("\']")+'.png', pad_inches=1.0 ,format="png")
